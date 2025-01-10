@@ -48,9 +48,16 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class ScoringSubsystem extends SubsystemBase{
     
-    public ScoringSubsystem()
+    public ScoringSubsystem() //figure out how to get input from the joystick buttons
     {
         //get fucked (remove later)
     }
+
+    /*
+     * The system works like this:
+     * Intake box thing that can sort of spurt forwards
+     * It's on an elevator
+     * Idk dude ask nolan
+     */
 
 }
