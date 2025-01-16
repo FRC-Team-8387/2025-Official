@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,9 +50,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class ScoringSubsystem extends SubsystemBase{
     
-    private final Joystick leftStick = new Joystick(1); //figure out bindings later
-    private final Joystick rightStick = new Joystick(2);
-    private final CLASS elevatorMotor = new CLASS(3);
+    private final PWMSparkMax elevatorMotor = new PWMSparkMax(1); //Figure out the channel later
 
     public ScoringSubsystem()
     {
@@ -61,6 +60,7 @@ public class ScoringSubsystem extends SubsystemBase{
     }
     public moveTo(double targetRotations)
     {
-        this.elevatorMotor.setPosition(targetRotations);
+        this.elevatorMotor.(targetRotations);
     }
+
 }
