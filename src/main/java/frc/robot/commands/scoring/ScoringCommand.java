@@ -7,7 +7,6 @@ import frc.robot.subsystems.scoring.ScoringSubsystem;
 
 public class ScoringCommand extends Command {
   private final ScoringSubsystem scoringSystem;
-  private final double topRotation = 1000; //placeholder value, represents the rotations/degrees needed to reach the top
 
   private double targetPosition = 0; // target proportion of the full height, from 0 (bottom) to 1 (top)
 
@@ -17,25 +16,13 @@ public class ScoringCommand extends Command {
     this.targetPosition = target;
   }
 
-  public void setTarget(short toggle) //toggle will be equal to either 1, 0, or -1.
-  {
-    if (toggle > 0)
-    {
-      targetPosition++;
-    }
-    else if (toggle < 0)
-    {
-      targetPosition--;
-    }
-    else
-    {
-      //Do not do anything.
-    }
-  }
-
-  @Override
-  public void execute() {
-    scoringSystem.moveTo(topRotation*targetPosition) //placeholder command, please make something similar in ScoringSubsystem
-  }
+  /*
+   * So previously we were planning on having pre-set positions, 
+   * but this won't actually work because the NEO motor with the 
+   * SparkMax controller can't be set to go to specific positions.
+   * It can only be set to go to at *speeds,* not *positions.*
+   * So elevator movement will have to be dynamic, unless we can find some other solution.
+   * Which we won't.
+   */
 
 }

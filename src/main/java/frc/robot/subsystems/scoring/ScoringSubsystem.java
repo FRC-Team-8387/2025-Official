@@ -58,9 +58,12 @@ public class ScoringSubsystem extends SubsystemBase{
          * what do I even put in the constructor for this
          */
     }
-    public moveTo(double targetRotations)
-    {
-        this.elevatorMotor.(targetRotations);
-    }
+
+    /*
+     * Okay so basically:
+     *      - We need the little mini-joystick on top of the main joystick (or maybe buttons) to move the elevator up and down
+     *      - I have no fucking clue how to do that
+     *      - help me
+     */
 
 }
