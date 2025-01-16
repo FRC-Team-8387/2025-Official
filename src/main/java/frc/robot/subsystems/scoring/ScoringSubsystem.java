@@ -51,6 +51,16 @@ public class ScoringSubsystem extends SubsystemBase{
     
     private final Joystick leftStick = new Joystick(1); //figure out bindings later
     private final Joystick rightStick = new Joystick(2);
-    private final CLASS elevatorMotor = new CLASS(PARAMETERS);
+    private final CLASS elevatorMotor = new CLASS(3);
 
+    public ScoringSubsystem()
+    {
+        /*
+         * what do I even put in the constructor for this
+         */
+    }
+    public moveTo(double targetRotations)
+    {
+        this.elevatorMotor.setPosition(targetRotations);
+    }
 }
