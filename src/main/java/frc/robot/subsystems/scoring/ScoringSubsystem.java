@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,16 +49,8 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class ScoringSubsystem extends SubsystemBase{
     
-    public ScoringSubsystem() //figure out how to get input from the joystick buttons
-    {
-        //get fucked (remove later)
-    }
-
-    /*
-     * The system works like this:
-     * Intake box thing that can sort of spurt forwards
-     * It's on an elevator
-     * Idk dude ask nolan
-     */
+    private final Joystick leftStick = new Joystick(1); //figure out bindings later
+    private final Joystick rightStick = new Joystick(2);
+    private final CLASS elevatorMotor = new CLASS(PARAMETERS);
 
 }
