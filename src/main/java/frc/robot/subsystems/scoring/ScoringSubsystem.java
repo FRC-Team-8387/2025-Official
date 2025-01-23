@@ -55,15 +55,20 @@ public class ScoringSubsystem extends SubsystemBase{
     public ScoringSubsystem()
     {
         /*
-         * what do I even put in the constructor for this
+         * Does this need a constructor?
          */
     }
 
     /*
      * Okay so basically:
      *      - We need the little mini-joystick on top of the main joystick (or maybe buttons) to move the elevator up and down
-     *      - I have no fucking clue how to do that
+     *      - I have no clue how to do that
      *      - help me
+     *      - please
      */
 
+    public void set (int movementVal)
+    {
+        elevatorMotor.set((double) movementVal);
+    }
 }

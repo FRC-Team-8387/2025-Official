@@ -7,13 +7,21 @@ import frc.robot.subsystems.scoring.ScoringSubsystem;
 
 public class ScoringCommand extends Command {
   private final ScoringSubsystem scoringSystem;
+  private final int movementVal;
 
-  private double targetPosition = 0; // target proportion of the full height, from 0 (bottom) to 1 (top)
+  //private double targetPosition = 0; // target proportion of the full height, from 0 (bottom) to 1 (top)
 
-  public ScoringCommand(ScoringSubsystem system, double target)
+  public ScoringCommand(ScoringSubsystem system, int movementVal)
   {
     this.scoringSystem = system;
-    this.targetPosition = target;
+    this.movementVal = movementVal;
+    //this.targetPosition = target;
+    addRequirements(scoringSystem);
+  }
+
+  public void execute()
+  {
+    scoringSystem.set(movementVal);
   }
 
   /*
@@ -24,5 +32,7 @@ public class ScoringCommand extends Command {
    * So elevator movement will have to be dynamic, unless we can find some other solution.
    * Which we won't.
    */
+
+
 
 }
