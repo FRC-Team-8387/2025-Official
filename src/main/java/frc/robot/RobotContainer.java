@@ -96,6 +96,7 @@ public class RobotContainer
    */
   private void configureBindings()
   {
+    /* Old bindings for an xbox controller; we need to make new ones for the joysticks.
     if (DriverStation.isTest())
     {
       driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
@@ -123,6 +124,7 @@ public class RobotContainer
       drivebase.setDefaultCommand(
           !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
     }
+    */
   }
 
   /**
