@@ -19,10 +19,34 @@ public class ScoringCommand extends Command {
     addRequirements(scoringSystem);
   }
 
-  public void execute()
-  {
-    scoringSystem.set(movementVal);
-  }
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+      System.out.println("Elevator movement beginning");
+    }
+  
+     // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+  
+      scoringSystem.set((double) movementVal);
+    }
+  
+    
+  
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+      scoringSystem.set(0);
+      System.out.println("Elevator movement ended");
+    }
+  
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+      // leave false, so always can drive
+      return false;
+    }
 
   /*
    * So previously we were planning on having pre-set positions, 
