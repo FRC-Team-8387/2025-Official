@@ -29,7 +29,7 @@ public class ScoringCommand extends Command {
     @Override
     public void execute() {
   
-      scoringSystem.set((double) movementVal);
+      scoringSystem.set(movementVal);
     }
   
     
