@@ -51,6 +51,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class ScoringSubsystem extends SubsystemBase{
     
     private final PWMSparkMax elevatorMotor = new PWMSparkMax(1); //Figure out the channel later
+    private final PWMSparkMax launcherMotor = new PWMSparkMax(2); //Figure out the channel later
 
     public ScoringSubsystem()
     {
