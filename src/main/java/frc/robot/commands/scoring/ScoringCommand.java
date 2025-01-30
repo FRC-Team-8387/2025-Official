@@ -7,14 +7,14 @@ import frc.robot.subsystems.scoring.ScoringSubsystem;
 
 public class ScoringCommand extends Command {
   private final ScoringSubsystem scoringSystem;
-  private final int movementVal;
+  private final double targetRotations;
 
   //private double targetPosition = 0; // target proportion of the full height, from 0 (bottom) to 1 (top)
 
-  public ScoringCommand(ScoringSubsystem system, int movementVal)
+  public ScoringCommand(ScoringSubsystem system, double target)
   {
     this.scoringSystem = system;
-    this.movementVal = movementVal;
+    this.targetRotations = target;
     //this.targetPosition = target;
     addRequirements(scoringSystem);
   }
@@ -29,7 +29,7 @@ public class ScoringCommand extends Command {
     @Override
     public void execute() {
   
-      scoringSystem.set(movementVal);
+      scoringSystem.moveTo(targetRotations);
     }
   
     
@@ -37,8 +37,8 @@ public class ScoringCommand extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-      scoringSystem.set(0);
-      System.out.println("Elevator movement ended");
+      scoringSystem.moveTo(0);
+      System.out.println("Elevator movement ended; return to start");
     }
   
     // Returns true when the command should end.
