@@ -68,10 +68,10 @@ public class RobotContainer {
             new Trigger(rightStick::getTrigger).whileTrue(Commands.runOnce(() -> scoringSubsystem.launch()));
             
             new Trigger(() -> rightStick.getRawButton(2)).whileTrue(Commands.runOnce(() -> scoringSubsystem.pull()));
-            new Trigger(() -> rightStick.getRawButton(3)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(0)));
-            new Trigger(() -> rightStick.getRawButton(4)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(25)));
-            new Trigger(() -> rightStick.getRawButton(5)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(50)));
-            new Trigger(() -> rightStick.getRawButton(6)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(100)));
+            new Trigger(() -> rightStick.getRawButton(3)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(ScoringSubsystem.MIN_ELEVATOR_HEIGHT)));
+            new Trigger(() -> rightStick.getRawButton(4)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(ScoringSubsystem.MAX_ELEVATOR_HEIGHT*0.25)));
+            new Trigger(() -> rightStick.getRawButton(5)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(ScoringSubsystem.MAX_ELEVATOR_HEIGHT*0.50)));
+            new Trigger(() -> rightStick.getRawButton(6)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(ScoringSubsystem.MAX_ELEVATOR_HEIGHT*1.0)));
         }
     }
 

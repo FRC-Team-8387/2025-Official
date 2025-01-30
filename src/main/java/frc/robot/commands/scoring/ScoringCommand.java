@@ -9,8 +9,6 @@ public class ScoringCommand extends Command {
   private final ScoringSubsystem scoringSystem;
   private final double targetRotations;
 
-  //private double targetPosition = 0; // target proportion of the full height, from 0 (bottom) to 1 (top)
-
   public ScoringCommand(ScoringSubsystem system, double target)
   {
     this.scoringSystem = system;

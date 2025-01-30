@@ -13,8 +13,8 @@ public class ScoringSubsystem extends SubsystemBase {
     private static final int ELEVATOR_MOTOR_PWM_CHANNEL = 3; // PWM channel for the motor
     private static final int ENCODER_CHANNEL_A = 0; // Encoder channel A
     private static final int ENCODER_CHANNEL_B = 1; // Encoder channel B
-    private static final double MAX_ELEVATOR_HEIGHT = 100.0; // Max encoder units (example)
-    private static final double MIN_ELEVATOR_HEIGHT = 0.0;   // Min encoder units (example)
+    public static final double MAX_ELEVATOR_HEIGHT = 100.0; // Max encoder units (example)
+    public static final double MIN_ELEVATOR_HEIGHT = 0.0;   // Min encoder units (example)
     private static final double JOYSTICK_DEADZONE = 0.1;     // Deadzone for joystick input
     private static final double ELEVATOR_SPEED = 0.5;        // Base speed for manual control
 
@@ -87,7 +87,7 @@ public class ScoringSubsystem extends SubsystemBase {
     }
     public void launch()
     {
-        
+
     }
 
     public void stop() {
