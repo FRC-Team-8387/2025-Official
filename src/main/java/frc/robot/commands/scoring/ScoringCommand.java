@@ -44,7 +44,7 @@ public class ScoringCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-      // leave false, so always can drive
+      // leave false, so always can move
       return false;
     }
 
