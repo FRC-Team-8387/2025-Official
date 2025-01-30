@@ -2,6 +2,7 @@ package frc.robot.subsystems.scoring;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,7 +19,7 @@ public class ScoringSubsystem extends SubsystemBase {
     private static final double ELEVATOR_SPEED = 0.5;        // Base speed for manual control
 
     // Motor, encoder, and joystick instances
-    private final PWMVictorSPX elevatorMotor = new PWMVictorSPX(ELEVATOR_MOTOR_PWM_CHANNEL);
+    private final PWMSparkMax elevatorMotor = new PWMSparkMax(ELEVATOR_MOTOR_PWM_CHANNEL);
     private final Encoder elevatorEncoder = new Encoder(ENCODER_CHANNEL_A, ENCODER_CHANNEL_B);
     private final Joystick joystick = new Joystick(1); // Joystick port
     // Update the joystick port number if your joystick is connected to a different port
