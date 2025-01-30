@@ -19,8 +19,16 @@ public class RobotContainer {
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/8387"));
   private final ScoringSubsystem scoringSubsystem = new ScoringSubsystem();
 
+  // Drive control commands
+  Command driveFieldOrientedDirectAngle = drivebase.driveCommand(
+      () -> MathUtil.applyDeadband(driverJoystick.getY()/3.0, 0.05),
+      () -> MathUtil.applyDeadband(driverJoystick.getX()/3.0, 0.05),
+      () -> driverJoystick.getTwist(),
+      () -> driverJoystick.getThrottle());
+
   public RobotContainer() {
     configureBindings();
+    drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
   }
 
   private void configureBindings() {
@@ -46,5 +54,3 @@ public class RobotContainer {
     drivebase.setMotorBrake(brake);
   }
 }
-
-
