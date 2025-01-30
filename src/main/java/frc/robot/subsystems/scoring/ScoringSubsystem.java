@@ -81,6 +81,15 @@ public class ScoringSubsystem extends SubsystemBase {
         }
     }
 
+    public void pull()
+    {
+
+    }
+    public void launch()
+    {
+        
+    }
+
     public void stop() {
         // Stop the motor
         elevatorMotor.set(0);

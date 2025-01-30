@@ -21,6 +21,7 @@ public class RobotContainer {
     // Joysticks
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
+    private boolean isHalfSpeed = false;
 
     // Subsystems
     private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/8387"));
@@ -28,9 +29,9 @@ public class RobotContainer {
 
     AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(
         drivebase,
-        () -> -MathUtil.applyDeadband(leftStick.getY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(leftStick.getX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -MathUtil.applyDeadband(rightStick.getX(), OperatorConstants.RIGHT_X_DEADBAND),
+        () -> -MathUtil.applyDeadband(leftStick.getY() * (isHalfSpeed ? 0.5 : 1.0), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(leftStick.getX() * (isHalfSpeed ? 0.5 : 1.0), OperatorConstants.LEFT_X_DEADBAND),
+        () -> -MathUtil.applyDeadband(rightStick.getX() * (isHalfSpeed ? 0.5 : 1.0), OperatorConstants.RIGHT_X_DEADBAND),
         leftStick::getTrigger,
         () -> false,
         () -> false,
@@ -38,21 +39,21 @@ public class RobotContainer {
     );
 
     Command driveFieldOrientedDirectAngle = drivebase.driveCommand(
-        () -> MathUtil.applyDeadband(leftStick.getY() / 3.0, OperatorConstants.LEFT_Y_DEADBAND),
-        () -> MathUtil.applyDeadband(leftStick.getX() / 3.0, OperatorConstants.LEFT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(leftStick.getY() * (isHalfSpeed ? 0.5 : 1.0) / 3.0, OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(leftStick.getX() * (isHalfSpeed ? 0.5 : 1.0) / 3.0, OperatorConstants.LEFT_X_DEADBAND),
         () -> rightStick.getX(),
         () -> rightStick.getY()
     );
 
     Command driveFieldOrientedAngularVelocity = drivebase.driveCommand(
-        () -> MathUtil.applyDeadband(leftStick.getY() * -1, OperatorConstants.LEFT_Y_DEADBAND),
-        () -> MathUtil.applyDeadband(leftStick.getX() * -1, OperatorConstants.LEFT_X_DEADBAND),
-        () -> rightStick.getX() * -1
+        () -> MathUtil.applyDeadband(leftStick.getY() * (isHalfSpeed ? -0.5 : -1.0), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(leftStick.getX() * (isHalfSpeed ? -0.5 : -1.0), OperatorConstants.LEFT_X_DEADBAND),
+        () -> rightStick.getX() * (isHalfSpeed ? -0.5 : -1.0)
     );
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
-        () -> MathUtil.applyDeadband(leftStick.getY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> MathUtil.applyDeadband(leftStick.getX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> MathUtil.applyDeadband(leftStick.getY() * (isHalfSpeed ? 0.5 : 1.0), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(leftStick.getX() * (isHalfSpeed ? 0.5 : 1.0), OperatorConstants.LEFT_X_DEADBAND),
         () -> rightStick.getRawAxis(2)
     );
 
@@ -62,8 +63,7 @@ public class RobotContainer {
 
     private void configureBindings() {
         if (!DriverStation.isTest()) {
-            new Trigger(leftStick::getTrigger).whileTrue(Commands.runOnce(() -> drivebase.setFullSpeedMode(true)))
-                                              .onFalse(Commands.runOnce(() -> drivebase.setFullSpeedMode(false)));
+            new Trigger(leftStick::getTrigger).onTrue(Commands.runOnce(() -> isHalfSpeed = !isHalfSpeed));
             
             new Trigger(rightStick::getTrigger).whileTrue(Commands.runOnce(() -> scoringSubsystem.launch()));
             
