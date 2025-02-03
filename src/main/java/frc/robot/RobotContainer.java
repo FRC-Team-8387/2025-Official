@@ -74,7 +74,7 @@ public class RobotContainer {
             // Right stick trigger to launch scoring mechanism
             new Trigger(rightStick::getTrigger).whileTrue(Commands.runOnce(() -> scoringSubsystem.launch()));
             
-            // Elevator movement controls
+            // Elevator movement controls - current moveTo parameters are placeholders
             new Trigger(() -> rightStick.getRawButton(2)).whileTrue(Commands.runOnce(() -> scoringSubsystem.pull()));
             new Trigger(() -> rightStick.getRawButton(3)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(0)));
             new Trigger(() -> rightStick.getRawButton(4)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(25)));
