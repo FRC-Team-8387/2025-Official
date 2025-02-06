@@ -48,7 +48,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
         // Calculate target position based on joystick input
         double currentHeight = elevatorEncoder.getDistance();
-        double targetHeight = currentHeight + joystickValue * ELEVATOR_SPEED;
+        double targetHeight = 0; //PLACEHOLDER: MAKE A STATIC VARIABLE IN ROBOTCONTAINER TO STORE TARGET HEIGHT
 
         // Clamp target height to within safe limits
         if (targetHeight > MAX_ELEVATOR_HEIGHT) {
