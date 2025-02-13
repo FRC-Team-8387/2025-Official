@@ -113,10 +113,8 @@ public class ScoringSubsystem extends SubsystemBase {
         }
         else
         {
-            elevatorMotor.set(0);
+            elevatorMotor.set(0); // Stop motor once at target
         }
-
-        elevatorMotor.set(0); // Stop motor once at target
     }
 
     public void pull()
