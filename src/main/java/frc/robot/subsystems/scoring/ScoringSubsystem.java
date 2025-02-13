@@ -102,6 +102,20 @@ public class ScoringSubsystem extends SubsystemBase {
             }
         }
         */
+
+        if(targetRotations > currentHeight)
+        {
+            elevatorMotor.set(ELEVATOR_SPEED);
+        }
+        else if(targetRotations < currentHeight)
+        {
+            elevatorMotor.set(-ELEVATOR_SPEED);
+        }
+        else
+        {
+            elevatorMotor.set(0);
+        }
+
         elevatorMotor.set(0); // Stop motor once at target
     }
 
