@@ -26,7 +26,7 @@ public class ScoringCommand extends Command {
   @Override
   public void execute() {
 
-    scoringSystem.moveToPosition(targetRotations);
+    scoringSystem.moveToPosition(ScoringSubsystem.globalTargetRotations);
 
     /* Do I need this code? Not sure.
     if(pushPullFactor == 1)
