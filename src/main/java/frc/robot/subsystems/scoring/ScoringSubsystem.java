@@ -17,10 +17,19 @@ public class ScoringSubsystem extends SubsystemBase {
     private static final int LAUNCHER_MOTOR_PWM_CHANNEL = 4; // PWM channel for the launcher motor
     private static final int ENCODER_CHANNEL_A = 0; // Encoder channel A
     private static final int ENCODER_CHANNEL_B = 1; // Encoder channel B
+
+    // Placeholder values for max, min, and step heights. CHANGE LATER.
     public static final double MAX_ELEVATOR_HEIGHT = 100.0; // Max encoder units (example)
     public static final double MIN_ELEVATOR_HEIGHT = 0.0;   // Min encoder units (example)
+    public static final double STEP_1 = 25;
+    public static final double STEP_2 = 50;
+    public static final double STEP_3 = 75;
+    public static final double STEP_4 = 100;
+
     private static final double JOYSTICK_DEADZONE = 0.1;     // Deadzone for joystick input
     private static final double ELEVATOR_SPEED = 0.5;        // Base speed for manual control
+
+    public static double globalTargetRotations = 0; //static variable storing target rotations for the elevator.
 
     // Motor, encoder, and joystick instances
     private final PWMSparkMax elevatorMotor = new PWMSparkMax(ELEVATOR_MOTOR_PWM_CHANNEL);
@@ -69,9 +78,26 @@ public class ScoringSubsystem extends SubsystemBase {
         }
     }
 
-    public void moveTo(double targetRotations) {
-        // Manually move elevator to a specific position
+    public void moveBasic() //Tells the elevator to move to the current target, without changing the target.
+    {
         double currentHeight = elevatorEncoder.getDistance();
+
+        if(ScoringSubsystem.globalTargetRotations > currentHeight)
+        {
+            elevatorMotor.set(ELEVATOR_SPEED);
+        }
+        else if(ScoringSubsystem.globalTargetRotations < currentHeight)
+        {
+            elevatorMotor.set(-ELEVATOR_SPEED);
+        }
+        else
+        {
+            elevatorMotor.set(0); // Stop motor once at target
+        }
+    }
+
+    public void moveToPosition(double targetRotations) //Moves the elevator to a given position
+    {
 
         //Set target within min and max parameters
         if (targetRotations < MIN_ELEVATOR_HEIGHT)
@@ -83,54 +109,40 @@ public class ScoringSubsystem extends SubsystemBase {
             targetRotations = MAX_ELEVATOR_HEIGHT;
         }
 
-        /* 
-        //  !!!PROBLEM!!! 
-        //  We need to figure out how to do this WITHOUT a while loop! 
-        //  Currently my idea is to have the buttons set a target variable somewhere,
-        //  and the command scheduler will automatically call to go to the target every time the main loop repeats, without needing a while loop here.
-        //  In theory this should work???
-        // (We can't use while loops because it interferes with the robot's commmunication with control systems, it caused our robot to crash repeatedly last year)
+        ScoringSubsystem.globalTargetRotations = targetRotations;
 
-        //Move to target position
-        if (targetRotations > currentHeight) {
-            while (elevatorEncoder.getDistance() < targetRotations) {
-                elevatorMotor.set(ELEVATOR_SPEED);
-            }
-        } else if (targetRotations < currentHeight) {
-            while (elevatorEncoder.getDistance() > targetRotations) {
-                elevatorMotor.set(-ELEVATOR_SPEED);
-            }
-        }
-        
-         //Move to target position
-        if (targetRotations > currentHeight) {
-            if (elevatorEncoder.getDistance() < targetRotations) {
-                elevatorMotor.set(ELEVATOR_SPEED);
-            }
-        } else if (targetRotations < currentHeight) 
+    }
+
+    public void moveStep(boolean up) //Moves the elevator up or down to pre-set steps when bumpers are pressed
+    {
+        //Determines the current target position moves to an adjacent step position
+        //Works based on the TARGET position, not the ACTUAL position
+        //If you press to go up six times, it will go straight to the top without stopping.
+
+        double currentHeight = elevatorEncoder.getDistance();
+        double[] adjacent = new double[2];
+
+        /* wip dw about it
+        if()
         {
-            if (elevatorEncoder.getDistance() > targetRotations) 
-            {
-                elevatorMotor.set(-ELEVATOR_SPEED);
-            }
+
         }
-        
-        
+        else if ()
+        {
 
+        }
+        */ 
+    }
 
-
-
-
-        */
-
-        // !NEW!
-        // Move the elevator up or down based on the target height
-        if (targetHeight > currentHeight) {
-            elevatorMotor.set(ELEVATOR_SPEED); // Move up
-        } else if (targetHeight < currentHeight) {
-            elevatorMotor.set(-ELEVATOR_SPEED); // Move down
-        } else {
-            elevatorMotor.set(0); // Stop motor if we're at the target position
+    public void moveGranular(boolean up) //Moves the elevator up or down when bumpers are pressed.
+    {
+        if(up)
+        {
+            moveToPosition(ScoringSubsystem.globalTargetRotations+1);
+        }
+        else
+        {
+            moveToPosition(ScoringSubsystem.globalTargetRotations+1);
         }
 
 
