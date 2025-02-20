@@ -35,7 +35,7 @@ public class ScoringSubsystem extends SubsystemBase {
         // Change the distance per pulse to match the specific configuration of your encoder (e.g., steps per revolution)
         elevatorEncoder.reset();
     }
-
+    
     @Override
     public void periodic() {
         // Read joystick input
@@ -48,7 +48,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
         // Calculate target position based on joystick input
         double currentHeight = elevatorEncoder.getDistance();
-        double targetHeight = 0; //PLACEHOLDER: MAKE A STATIC VARIABLE IN ROBOTCONTAINER TO STORE TARGET HEIGHT
+        double targetHeight = currentHeight + joystickValue * ELEVATOR_SPEED;
 
         // Clamp target height to within safe limits
         if (targetHeight > MAX_ELEVATOR_HEIGHT) {
@@ -101,20 +101,41 @@ public class ScoringSubsystem extends SubsystemBase {
                 elevatorMotor.set(-ELEVATOR_SPEED);
             }
         }
+        
+         //Move to target position
+        if (targetRotations > currentHeight) {
+            if (elevatorEncoder.getDistance() < targetRotations) {
+                elevatorMotor.set(ELEVATOR_SPEED);
+            }
+        } else if (targetRotations < currentHeight) 
+        {
+            if (elevatorEncoder.getDistance() > targetRotations) 
+            {
+                elevatorMotor.set(-ELEVATOR_SPEED);
+            }
+        }
+        
+        
+
+
+
+
+
         */
 
-        if(targetRotations > currentHeight)
-        {
-            elevatorMotor.set(ELEVATOR_SPEED);
+        // !NEW!
+        // Move the elevator up or down based on the target height
+        if (targetHeight > currentHeight) {
+            elevatorMotor.set(ELEVATOR_SPEED); // Move up
+        } else if (targetHeight < currentHeight) {
+            elevatorMotor.set(-ELEVATOR_SPEED); // Move down
+        } else {
+            elevatorMotor.set(0); // Stop motor if we're at the target position
         }
-        else if(targetRotations < currentHeight)
-        {
-            elevatorMotor.set(-ELEVATOR_SPEED);
-        }
-        else
-        {
-            elevatorMotor.set(0); // Stop motor once at target
-        }
+
+
+
+        elevatorMotor.set(0); // Stop motor once at target
     }
 
     public void pull()
@@ -131,4 +152,9 @@ public class ScoringSubsystem extends SubsystemBase {
         elevatorMotor.set(0);
         launcherMotor.set(0);
     }
+
+
+
+
+   
 }

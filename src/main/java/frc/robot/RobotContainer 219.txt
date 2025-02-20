@@ -48,9 +48,6 @@ public class RobotContainer {
         () -> rightStick.getY()
     );
 
-
-    
-
     // Angular velocity drive mode
     Command driveFieldOrientedAngularVelocity = drivebase.driveCommand(
         () -> MathUtil.applyDeadband(leftStick.getY() * (isHalfSpeed ? -0.5 : -1.0), OperatorConstants.LEFT_Y_DEADBAND),
@@ -65,19 +62,6 @@ public class RobotContainer {
         () -> rightStick.getRawAxis(2)
     );
 
-    /*
-     * Googling online and using ChatGPT, many joysticks do use negative Y for forward movement. Changing the code
-     * to have negative Y and could fix A (key word) problem. Though I'm unsure, as it is untested
-     * - Lance
-     * 
-     * EXAMPLE CODE
-    Command driveFieldOrientedDirectAngle = drivebase.driveCommand(
-        () -> -MathUtil.applyDeadband(leftStick.getY() * (isHalfSpeed ? 0.5 : 1.0) / 3.0, OperatorConstants.LEFT_Y_DEADBAND),
-        () -> MathUtil.applyDeadband(leftStick.getX() * (isHalfSpeed ? 0.5 : 1.0) / 3.0, OperatorConstants.LEFT_X_DEADBAND),
-        () -> rightStick.getX(),
-        () -> rightStick.getY()
-    );
-     */
     public RobotContainer() {
         configureBindings();
     }
@@ -98,22 +82,6 @@ public class RobotContainer {
             new Trigger(() -> rightStick.getRawButton(5)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(50)));
             new Trigger(() -> rightStick.getRawButton(6)).whileTrue(Commands.runOnce(() -> scoringSubsystem.moveTo(100)));
         }
-
-        /*
-         * As, for whatever reason, our flight controller isn't giving any input on the robot, it might be useful if we 
-         * print debugs. This could let us know whether the code has input from the flgiht controller in the first place. 
-         * 
-         * EXAMPLE CODE
-        System.out.println("Left Y: " + leftStick.getY() +
-                   " Left X: " + leftStick.getX() +
-                   " Right X: " + rightStick.getX() +
-                   " Right Y: " + rightStick.getY());
-         * 
-         */
-
-
-
-
     }
 
     // Returns the autonomous command
@@ -131,3 +99,18 @@ public class RobotContainer {
         drivebase.setMotorBrake(brake);
     }
 }
+
+
+
+/*
+    * 
+    *
+    *
+    Command driveFieldOrientedDirectAngle = drivebase.driveCommand(
+        () -> -MathUtil.applyDeadband(driverJoystick.getY(), 0.05), // Inverted Y-axis for correct forward movement
+        () -> MathUtil.applyDeadband(driverJoystick.getX(), 0.05),
+        () -> MathUtil.applyDeadband(driverJoystick.getTwist(), 0.05) * 0.75, // Reduce rotation sensitivity
+        () -> (1 - driverJoystick.getThrottle()) / 2 // Convert throttle (1 to -1) into a 0 to 1 scale
+    );
+     * 
+     */
