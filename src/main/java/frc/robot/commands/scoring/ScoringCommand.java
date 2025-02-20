@@ -54,16 +54,4 @@ public class ScoringCommand extends Command {
     // leave false, so always can move
     return false;
   }
-
-  /*
-   * So previously we were planning on having pre-set positions, 
-   * but this won't actually work because the NEO motor with the 
-   * SparkMax controller can't be set to go to specific positions.
-   * It can only be set to go to at *speeds,* not *positions.*
-   * So elevator movement will have to be dynamic, unless we can find some other solution.
-   * Which we won't.
-   */
-
-
-
 }
