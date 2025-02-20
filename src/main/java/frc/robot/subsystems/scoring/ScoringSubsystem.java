@@ -44,7 +44,7 @@ public class ScoringSubsystem extends SubsystemBase {
         // Change the distance per pulse to match the specific configuration of your encoder (e.g., steps per revolution)
         elevatorEncoder.reset();
     }
-
+    
     @Override
     public void periodic() {
         // Read joystick input
@@ -57,7 +57,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
         // Calculate target position based on joystick input
         double currentHeight = elevatorEncoder.getDistance();
-        double targetHeight = 0; //PLACEHOLDER: MAKE A STATIC VARIABLE IN ROBOTCONTAINER TO STORE TARGET HEIGHT
+        double targetHeight = currentHeight + joystickValue * ELEVATOR_SPEED;
 
         // Clamp target height to within safe limits
         if (targetHeight > MAX_ELEVATOR_HEIGHT) {
@@ -144,6 +144,10 @@ public class ScoringSubsystem extends SubsystemBase {
         {
             moveToPosition(ScoringSubsystem.globalTargetRotations+1);
         }
+
+
+
+        elevatorMotor.set(0); // Stop motor once at target
     }
 
     public void pull()
@@ -160,4 +164,9 @@ public class ScoringSubsystem extends SubsystemBase {
         elevatorMotor.set(0);
         launcherMotor.set(0);
     }
+
+
+
+
+   
 }
