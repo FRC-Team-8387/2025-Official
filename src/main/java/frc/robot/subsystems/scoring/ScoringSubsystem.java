@@ -122,6 +122,7 @@ public class ScoringSubsystem extends SubsystemBase {
         double currentHeight = elevatorEncoder.getDistance();
         double[] adjacent = new double[2];
 
+        /* wip dw about it
         if()
         {
 
@@ -130,6 +131,7 @@ public class ScoringSubsystem extends SubsystemBase {
         {
 
         }
+        */ 
     }
 
     public void moveGranular(boolean up) //Moves the elevator up or down when bumpers are pressed.
