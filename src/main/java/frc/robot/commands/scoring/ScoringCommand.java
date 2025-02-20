@@ -7,14 +7,12 @@ import frc.robot.subsystems.scoring.ScoringSubsystem;
 
 public class ScoringCommand extends Command {
   private final ScoringSubsystem scoringSystem;
-  private final double targetRotations;
-  private final int pushPullFactor; // 0 = nothing, 1 = push, -1 = pull
+  //private final int pushPullFactor; // 0 = nothing, 1 = push, -1 = pull
 
   public ScoringCommand(ScoringSubsystem system, double target, int pushPullFactor)
   {
     this.scoringSystem = system;
-    this.targetRotations = target;
-    this.pushPullFactor = pushPullFactor;
+    //this.pushPullFactor = pushPullFactor;
     addRequirements(scoringSystem);
   }
 
@@ -28,7 +26,7 @@ public class ScoringCommand extends Command {
   @Override
   public void execute() {
 
-    scoringSystem.moveTo(targetRotations);
+    scoringSystem.moveToPosition(targetRotations);
 
     /* Do I need this code? Not sure.
     if(pushPullFactor == 1)
