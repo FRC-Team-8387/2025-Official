@@ -1,0 +1,8 @@
+To get correct offsets for swerve modules:
+    -Turn all swerve modules forward with the bevel gear on the left
+    -Connect to the robot
+    -Open Shuffleboard
+    -The absolute encoder offset for that module is equal to the absolute angle value for that module in Shuffleboard
+    -Make sure that:
+        -The IDs for everything in the json files are correct and match with what phoenix tuner and Shuffleboard tell you
+        -The appropriate values in shuffleboard change when you move the appropriate module around
