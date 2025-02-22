@@ -119,35 +119,56 @@ public class ScoringSubsystem extends SubsystemBase {
         //Works based on the TARGET position, not the ACTUAL position
         //If you press to go up six times, it will go straight to the top without stopping.
 
-        double currentHeight = elevatorEncoder.getDistance();
+        //double currentHeight = elevatorEncoder.getDistance(); Shouldn't be needed because this works based on the target position
         double[] adjacent = new double[2];
 
-        /* wip dw about it
-        if()
+        if(ScoringSubsystem.globalTargetRotations <= STEP_1) //If the target position is between the minimum and the first step, inclusive
         {
-
+            adjacent[0] = MIN_ELEVATOR_HEIGHT;
+            adjacent[1] = STEP_1;
         }
-        else if ()
+        else if (ScoringSubsystem.globalTargetRotations <= STEP_2) //If step 1 exclusive < target < step 2 inclusive
         {
-
+            adjacent[0] = STEP_1;
+            adjacent[1] = STEP_2;
         }
-        */ 
-    }
+        else if (ScoringSubsystem.globalTargetRotations <= STEP_3) //If step 2 exclusive < target < step 3 inclusive
+        {
+            adjacent[0] = STEP_2;
+            adjacent[1] = STEP_3;
+        }
+        else if (ScoringSubsystem.globalTargetRotations <= STEP_4) //If step 3 exclusive < target < step 4 inclusive
+        {
+            adjacent[0] = STEP_3;
+            adjacent[1] = STEP_4;
+        }
+        else //If step 4 exclusive < target < maximum inclusive
+        {
+            adjacent[0] = STEP_4;
+            adjacent[1] = MAX_ELEVATOR_HEIGHT;
+        }
 
-    public void moveGranular(boolean up) //Moves the elevator up or down when bumpers are pressed.
-    {
+        //Move up or down to the adjacent step
         if(up)
         {
-            moveToPosition(ScoringSubsystem.globalTargetRotations+1);
+            moveToPosition(adjacent[1]);
         }
         else
         {
-            moveToPosition(ScoringSubsystem.globalTargetRotations+1);
+            moveToPosition(adjacent[0]);
         }
+    }
 
-
-
-        elevatorMotor.set(0); // Stop motor once at target
+    public void moveGranular(boolean up, double amount) //Moves the elevator up or down when bumpers are pressed.
+    {
+        if(up)
+        {
+            moveToPosition(ScoringSubsystem.globalTargetRotations+amount);
+        }
+        else
+        {
+            moveToPosition(ScoringSubsystem.globalTargetRotations-amount);
+        }
     }
 
     public void pull()
