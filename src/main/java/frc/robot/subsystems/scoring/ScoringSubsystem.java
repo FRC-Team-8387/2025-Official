@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import javax.lang.model.util.ElementScanner14;
 
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ScoringSubsystem extends SubsystemBase {
@@ -78,6 +79,15 @@ public class ScoringSubsystem extends SubsystemBase {
         }
     }
 
+    public Command moveBasicCommand() //Calls moveBasic, works with the Command structure
+    {
+        return run(
+        () -> {
+            moveBasic();
+        }
+        );
+    }
+
     public void moveBasic() //Tells the elevator to move to the current target, without changing the target.
     {
         double currentHeight = elevatorEncoder.getDistance();
@@ -94,6 +104,15 @@ public class ScoringSubsystem extends SubsystemBase {
         {
             elevatorMotor.set(0); // Stop motor once at target
         }
+    }
+
+    public Command moveToPositionCommand(double targetRotations) //Calls moveToPosition, works with the Command structure
+    {
+        return run(
+        () -> {
+            moveToPosition(targetRotations);
+        }
+        );
     }
 
     public void moveToPosition(double targetRotations) //Moves the elevator to a given position
@@ -113,7 +132,28 @@ public class ScoringSubsystem extends SubsystemBase {
 
     }
 
-    public void moveStep(boolean up) //Moves the elevator up or down to pre-set steps when bumpers are pressed
+    /* Correct Command syntax; try to decipher this
+        return run(
+        () -> {
+          drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,
+                                                      0,
+                                                      controller.headingCalculate(getHeading().getRadians(),
+                                                                                  getSpeakerYaw().getRadians()),
+                                                      getHeading())
+               );
+        }).until(() -> Math.abs(getSpeakerYaw().minus(getHeading()).getDegrees()) < tolerance);
+    */
+
+    public Command moveStepCommand(boolean up) //Calls moveStep, works with the Command structure
+    {
+        return run(
+        () -> {
+            moveStep(up);
+        }
+        );
+    }
+
+    public void moveStep(boolean up) //OLD: Moves the elevator up or down to pre-set steps when bumpers are pressed
     {
         //Determines the current target position moves to an adjacent step position
         //Works based on the TARGET position, not the ACTUAL position
@@ -159,6 +199,15 @@ public class ScoringSubsystem extends SubsystemBase {
         }
     }
 
+    public Command moveGranularCommand(boolean up, double amount) //Calls moveGranular, works with the Command structure
+    {
+        return run(
+        () -> {
+            moveGranular(up, amount);
+        }
+        );
+    }
+
     public void moveGranular(boolean up, double amount) //Moves the elevator while bumpers are pressed; speed depends on how hard you press.
     {
         if(up)
@@ -171,15 +220,40 @@ public class ScoringSubsystem extends SubsystemBase {
         }
     }
 
+    public Command pullCommand() //Calls pull, works with the Command structure
+    {
+        return run(
+        () -> {
+            pull();
+        }
+        );
+    }
     public void pull()
     {
         launcherMotor.set(1);
+    }
+
+    public Command launchCommand() //Calls launch, works with the Command structure
+    {
+        return run(
+        () -> {
+            launch();
+        }
+        );
     }
     public void launch()
     {
         launcherMotor.set(-1);
     }
 
+    public Command stopCommand() //Calls stop, works with the Command structure
+    {
+        return run(
+        () -> {
+            stop();
+        }
+        );
+    }
     public void stop() {
         // Stop the motor
         elevatorMotor.set(0);

@@ -16,12 +16,15 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import frc.robot.commands.scoring.ScoringCommand;
+import frc.robot.subsystems.scoring.ScoringSubsystem;
 
 
 /**
@@ -37,6 +40,7 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/8387"));
+  private final ScoringSubsystem scoringSystem = new ScoringSubsystem();
   // Applies deadbands and inverts controls because joysticks
   // are back-right positive while robot
   // controls are front-left positive
@@ -101,7 +105,8 @@ public class RobotContainer
   private void configureBindings()
   {
     // We'll need to rework these bindings to work with our robot.
-    /*
+    
+    
     if (DriverStation.isTest())
     {
       driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
@@ -109,7 +114,6 @@ public class RobotContainer
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
       driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().onTrue(Commands.none());
       driverXbox.rightBumper().onTrue(Commands.none());
       drivebase.setDefaultCommand(
           !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
@@ -125,15 +129,16 @@ public class RobotContainer
       driverXbox.start().whileTrue(Commands.none());
       driverXbox.back().whileTrue(Commands.none());
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
       drivebase.setDefaultCommand(
           !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
     }
-    */
+    
+    
 
     //New bindings for our control scheme; currently utter pandaemonium that doesn't do scheisse b/c I have no clue what I'm doing
 
     //If the triggers are pressed and the right joystick is pressed down, granularly move the elevator
+    /*
     driverXbox.leftTrigger()
       .and(driverXbox.rightStick())
       .whileTrue(Commands.run(null, null));
@@ -142,7 +147,7 @@ public class RobotContainer
       .whileTrue(Commands.run(null, null));
 
     //By default, if the triggers are pressed, step the elevator up or down
-    driverXbox.leftTrigger().onTrue(Commands.runOnce(null, null));
+    //driverXbox.leftTrigger().onTrue(Commands.runOnce(moveStep, null));
     driverXbox.rightTrigger().onTrue(Commands.runOnce(null, null));
 
     //If left button is pressed, pull the game piece in.
@@ -152,7 +157,9 @@ public class RobotContainer
     driverXbox.rightBumper().whileTrue(Commands.run(null, null));
 
     //If the left joystick is pressed, toggle to double the speed (otherwise halve it)
-    driverXbox.leftStick().toggleOnTrue(Commands.runOnce(null, null))
+    driverXbox.leftStick().toggleOnTrue(Commands.runOnce(null, null));
+    */
+
 
   }
 
