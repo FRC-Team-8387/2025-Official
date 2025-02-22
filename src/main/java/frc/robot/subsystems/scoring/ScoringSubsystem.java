@@ -159,15 +159,15 @@ public class ScoringSubsystem extends SubsystemBase {
         }
     }
 
-    public void moveGranular(boolean up, double amount) //Moves the elevator up or down when bumpers are pressed.
+    public void moveGranular(boolean up, double amount) //Moves the elevator while bumpers are pressed; speed depends on how hard you press.
     {
         if(up)
         {
-            moveToPosition(ScoringSubsystem.globalTargetRotations+amount);
+            moveToPosition(ScoringSubsystem.globalTargetRotations+amount*ELEVATOR_SPEED);
         }
         else
         {
-            moveToPosition(ScoringSubsystem.globalTargetRotations-amount);
+            moveToPosition(ScoringSubsystem.globalTargetRotations-amount*ELEVATOR_SPEED);
         }
     }
 

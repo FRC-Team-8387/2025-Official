@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -100,6 +101,7 @@ public class RobotContainer
   private void configureBindings()
   {
     // We'll need to rework these bindings to work with our robot.
+    /*
     if (DriverStation.isTest())
     {
       driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
@@ -127,6 +129,31 @@ public class RobotContainer
       drivebase.setDefaultCommand(
           !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
     }
+    */
+
+    //New bindings for our control scheme; currently utter pandaemonium that doesn't do scheisse b/c I have no clue what I'm doing
+
+    //If the triggers are pressed and the right joystick is pressed down, granularly move the elevator
+    driverXbox.leftTrigger()
+      .and(driverXbox.rightStick())
+      .whileTrue(Commands.run(null, null));
+    driverXbox.rightTrigger()
+      .and(driverXbox.rightStick())
+      .whileTrue(Commands.run(null, null));
+
+    //By default, if the triggers are pressed, step the elevator up or down
+    driverXbox.leftTrigger().onTrue(Commands.runOnce(null, null));
+    driverXbox.rightTrigger().onTrue(Commands.runOnce(null, null));
+
+    //If left button is pressed, pull the game piece in.
+    driverXbox.leftBumper().whileTrue(Commands.run(null, null));
+
+    //If right button is pressed, launch the game piece out
+    driverXbox.rightBumper().whileTrue(Commands.run(null, null));
+
+    //If the left joystick is pressed, toggle to double the speed (otherwise halve it)
+    driverXbox.leftStick().toggleOnTrue(Commands.runOnce(null, null))
+
   }
 
   /**
