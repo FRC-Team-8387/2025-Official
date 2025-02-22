@@ -6,3 +6,6 @@ To get correct offsets for swerve modules:
     -Make sure that:
         -The IDs for everything in the json files are correct and match with what phoenix tuner and Shuffleboard tell you
         -The appropriate values in shuffleboard change when you move the appropriate module around
+        -The wheels are all pointed perfectly straight (I suggest using a metal beam to straighten them)
+Once the offsets are good, play around with inversions to make sure everything is going where it should.
+Also, make sure to adjust PIDs according to the YAGSL docs (docs.yagsl.com)
