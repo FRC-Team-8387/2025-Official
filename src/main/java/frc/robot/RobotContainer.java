@@ -99,7 +99,7 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    // Old bindings for an xbox controller; we need to make new ones for the joysticks.
+    // We'll need to rework these bindings to work with our robot.
     if (DriverStation.isTest())
     {
       driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
