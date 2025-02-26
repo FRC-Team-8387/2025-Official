@@ -106,7 +106,7 @@ public class RobotContainer
   {
     // We'll need to rework these bindings to work with our robot.
     
-    
+    /*
     if (DriverStation.isTest())
     {
       driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
@@ -133,13 +133,14 @@ public class RobotContainer
           !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
     }
     //          !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
+    */
 
     
 
     //New bindings for our control scheme; currently utter pandaemonium that doesn't do scheisse b/c I have no clue what I'm doing
 
     //If the triggers are pressed and the right joystick is pressed down, granularly move the elevator
-    /*
+    
     driverXbox.leftTrigger()
       .and(driverXbox.rightStick())
       .whileTrue(Commands.run(null, null));
@@ -159,8 +160,9 @@ public class RobotContainer
 
     //If the left joystick is pressed, toggle to double the speed (otherwise halve it)
     driverXbox.leftStick().toggleOnTrue(Commands.runOnce(null, null));
-    */
-
+    
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
+    //drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
 
   }
 
