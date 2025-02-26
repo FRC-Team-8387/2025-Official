@@ -138,7 +138,7 @@ public class RobotContainer
     
 
     //New bindings for our control scheme; currently utter pandaemonium that doesn't do scheisse b/c I have no clue what I'm doing
-
+    
     //If the triggers are pressed and the right joystick is pressed down, granularly move the elevator
     
     driverXbox.leftTrigger()
@@ -150,7 +150,7 @@ public class RobotContainer
 
     //By default, if the triggers are pressed, step the elevator up or down
     //driverXbox.leftTrigger().onTrue(Commands.runOnce(moveStep, null));
-    driverXbox.rightTrigger().onTrue(Commands.runOnce(null, null));
+    driverXbox.rightTrigger().onTrue(Commands.runOnce(scoringSystem::moveStepCommand(true), scoringSystem));
 
     //If left button is pressed, pull the game piece in.
     driverXbox.leftBumper().whileTrue(Commands.run(null, null));
@@ -163,7 +163,7 @@ public class RobotContainer
     
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
     //drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
-
+    
   }
 
   /**
