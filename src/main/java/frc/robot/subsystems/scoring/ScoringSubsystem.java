@@ -15,7 +15,8 @@ public class ScoringSubsystem extends SubsystemBase {
     // Constants for motor and limits
     // All can be changable
     private static final int ELEVATOR_MOTOR_PWM_CHANNEL = 3; // PWM channel for the elevator motor
-    private static final int LAUNCHER_MOTOR_PWM_CHANNEL = 4; // PWM channel for the launcher motor
+    private static final int LAUNCHER_MOTOR_PWM_CHANNEL_1 = 4; // PWM channel for the launcher motor
+    private static final int LAUNCHER_MOTOR_PWM_CHANNEL_2 = 5; // PWM channel for the launcher motor
     private static final int ENCODER_CHANNEL_A = 0; // Encoder channel A
     private static final int ENCODER_CHANNEL_B = 1; // Encoder channel B
 
@@ -34,7 +35,8 @@ public class ScoringSubsystem extends SubsystemBase {
 
     // Motor, encoder, and joystick instances
     private final PWMSparkMax elevatorMotor = new PWMSparkMax(ELEVATOR_MOTOR_PWM_CHANNEL);
-    private final PWMSparkMax launcherMotor = new PWMSparkMax(LAUNCHER_MOTOR_PWM_CHANNEL);
+    private final PWMSparkMax launcherMotor_1 = new PWMSparkMax(LAUNCHER_MOTOR_PWM_CHANNEL_1);
+    private final PWMSparkMax launcherMotor_2 = new PWMSparkMax(LAUNCHER_MOTOR_PWM_CHANNEL_2);
     private final Encoder elevatorEncoder = new Encoder(ENCODER_CHANNEL_A, ENCODER_CHANNEL_B);
     private final Joystick joystick = new Joystick(1); // Joystick port
     // Update the joystick port number if your joystick is connected to a different port
@@ -230,7 +232,8 @@ public class ScoringSubsystem extends SubsystemBase {
     }
     public void pull()
     {
-        launcherMotor.set(1);
+        launcherMotor_1.set(1);
+        launcherMotor_2.set(1);
     }
 
     public Command launchCommand() //Calls launch, works with the Command structure
@@ -243,7 +246,8 @@ public class ScoringSubsystem extends SubsystemBase {
     }
     public void launch()
     {
-        launcherMotor.set(-1);
+        launcherMotor_1.set(-1);
+        launcherMotor_2.set(-1);
     }
 
     public Command stopCommand() //Calls stop, works with the Command structure
@@ -257,7 +261,8 @@ public class ScoringSubsystem extends SubsystemBase {
     public void stop() {
         // Stop the motor
         elevatorMotor.set(0);
-        launcherMotor.set(0);
+        launcherMotor_1.set(0);
+        launcherMotor_2.set(0);
     }
 
 
