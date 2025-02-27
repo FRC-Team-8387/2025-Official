@@ -141,28 +141,34 @@ public class RobotContainer
     
     //If the triggers are pressed and the right joystick is pressed down, granularly move the elevator
     
-    driverXbox.leftTrigger()
-      .and(driverXbox.rightStick())
-      .whileTrue(Commands.run(null, null));
     driverXbox.rightTrigger()
       .and(driverXbox.rightStick())
-      .whileTrue(Commands.run(null, null));
+      .whileTrue(Commands.run(() -> scoringSystem.moveGranularCommand(true, scoringSystem.getSpeed()))); //figure out how to base it on how far the trigger's been pressed
+    driverXbox.leftTrigger()
+      .and(driverXbox.rightStick())
+      .whileTrue(Commands.run(() -> scoringSystem.moveGranularCommand(false, scoringSystem.getSpeed()))); //figure out how to base it on how far the trigger's been pressed
 
     //By default, if the triggers are pressed, step the elevator up or down
-    //driverXbox.leftTrigger().onTrue(Commands.runOnce(moveStep, null));
-    driverXbox.rightTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(true), scoringSystem));
+    driverXbox.rightTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(true)));
+    driverXbox.leftTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(false)));
 
     //If left button is pressed, pull the game piece in.
-    driverXbox.leftBumper().whileTrue(Commands.run(null, null));
+    driverXbox.leftBumper().whileTrue(Commands.run(() -> scoringSystem.pullCommand()));
 
     //If right button is pressed, launch the game piece out
-    driverXbox.rightBumper().whileTrue(Commands.run(null, null));
+    driverXbox.rightBumper().whileTrue(Commands.run(() -> scoringSystem.launchCommand()));
 
     //If the left joystick is pressed, toggle to double the speed (otherwise halve it)
-    driverXbox.leftStick().toggleOnTrue(Commands.runOnce(null, null));
+    //driverXbox.leftStick().toggleOnTrue(Commands.runOnce(null)); Worry about this later, we haven't made the logic for it yet.
     
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
     //drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
+
+    /*
+     * NOTE FROM JOSEPH (V): THE CORRECT SYNTAX FOR CALLING A COMMAND BASED ON A CONTROL IS:
+     * 
+     * controllerName.buttonName().onTrue/whileTrue/onFalse/whileFalse(Commands.runOnce/run(() -> subSystem.commandName(parameters)));
+     */
     
   }
 

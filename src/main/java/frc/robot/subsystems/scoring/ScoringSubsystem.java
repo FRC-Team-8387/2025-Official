@@ -81,6 +81,11 @@ public class ScoringSubsystem extends SubsystemBase {
         }
     }
 
+    public double getSpeed() //returns speed of the elevator as set above
+    {
+        return ELEVATOR_SPEED;
+    }
+
     public Command moveBasicCommand() //Calls moveBasic, works with the Command structure
     {
         return run(
