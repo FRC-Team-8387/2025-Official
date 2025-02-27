@@ -136,8 +136,6 @@ public class RobotContainer
     */
 
     
-
-    //New bindings for our control scheme; currently utter pandaemonium that doesn't do scheisse b/c I have no clue what I'm doing
     
     //If the triggers are pressed and the right joystick is pressed down, granularly move the elevator
     
@@ -163,6 +161,7 @@ public class RobotContainer
     
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
     //drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
+    //drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
 
     /*
      * NOTE FROM JOSEPH (V): THE CORRECT SYNTAX FOR CALLING A COMMAND BASED ON A CONTROL IS:
