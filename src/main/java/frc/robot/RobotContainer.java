@@ -150,7 +150,7 @@ public class RobotContainer
 
     //By default, if the triggers are pressed, step the elevator up or down
     //driverXbox.leftTrigger().onTrue(Commands.runOnce(moveStep, null));
-    driverXbox.rightTrigger().onTrue(Commands.runOnce(scoringSystem::moveStepCommand(true), scoringSystem));
+    driverXbox.rightTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(true), scoringSystem));
 
     //If left button is pressed, pull the game piece in.
     driverXbox.leftBumper().whileTrue(Commands.run(null, null));

@@ -157,7 +157,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public void moveStep(boolean up) //OLD: Moves the elevator up or down to pre-set steps when bumpers are pressed
     {
-        //Determines the current target position moves to an adjacent step position
+        //Determines the current target position and moves to an adjacent step position
         //Works based on the TARGET position, not the ACTUAL position
         //If you press to go up six times, it will go straight to the top without stopping.
 
