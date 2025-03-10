@@ -33,10 +33,12 @@ public class RobotContainer
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
+  
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-                                                                                "swerve/neo"));
-
+                                                                                "swerve"));
+  
+  private final ScoringSubsystem scoringSystem = new ScoringSubsystem();
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
@@ -128,52 +130,31 @@ public class RobotContainer
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     }
 
-    if (Robot.isSimulation())
-    {
-      Pose2d target = new Pose2d(new Translation2d(1, 4),
-                                 Rotation2d.fromDegrees(90));
-      //drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
-      driveDirectAngleKeyboard.driveToPose(() -> target,
-                                           new ProfiledPIDController(5,
-                                                                     0,
-                                                                     0,
-                                                                     new Constraints(5, 2)),
-                                           new ProfiledPIDController(5,
-                                                                     0,
-                                                                     0,
-                                                                     new Constraints(Units.degreesToRadians(360),
-                                                                                     Units.degreesToRadians(180))
-                                           ));
-      driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-      driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
-      driverXbox.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
-                                                     () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
+    driverXbox.rightTrigger()
+      .and(driverXbox.rightStick())
+      .whileTrue(Commands.run(() -> scoringSystem.moveGranularCommand(true, scoringSystem.getSpeed()))); //figure out how to base it on how far the trigger's been pressed
+    driverXbox.leftTrigger()
+      .and(driverXbox.rightStick())
+      .whileTrue(Commands.run(() -> scoringSystem.moveGranularCommand(false, scoringSystem.getSpeed()))); //figure out how to base it on how far the trigger's been pressed
 
-//      driverXbox.b().whileTrue(
-//          drivebase.driveToPose(
-//              new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-//                              );
+    //By default, if the triggers are pressed, step the elevator up or down
+    driverXbox.rightTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(true)));
+    driverXbox.leftTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(false)));
 
-    }
-    if (DriverStation.isTest())
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
+    //If left button is pressed, pull the game piece in.
+    driverXbox.leftBumper().whileTrue(Commands.run(() -> scoringSystem.pullCommand()));
 
-      driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
-      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().onTrue(Commands.none());
-      driverXbox.rightBumper().onTrue(Commands.none());
-    } else
-    {
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-      driverXbox.start().whileTrue(Commands.none());
-      driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
-    }
+    //If right button is pressed, launch the game piece out
+    driverXbox.rightBumper().whileTrue(Commands.run(() -> scoringSystem.launchCommand()));
+
+    //If the left joystick is pressed, toggle to double the speed (otherwise halve it)
+    //driverXbox.leftStick().toggleOnTrue(Commands.runOnce(null)); Worry about this later, we haven't made the logic for it yet.
+
+    /*
+     * NOTE FROM JOSEPH (V): THE CORRECT SYNTAX FOR CALLING A COMMAND BASED ON A CONTROL IS:
+     * 
+     * controllerName.buttonName().onTrue/whileTrue/onFalse/whileFalse(Commands.runOnce/run(() -> subSystem.commandName(parameters)));
+     */
 
   }
 
