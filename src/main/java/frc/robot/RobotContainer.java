@@ -132,22 +132,24 @@ public class RobotContainer
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     }
 
+    /* bullshit bindings fuck all of this
     driverXbox.rightTrigger()
       .and(driverXbox.rightStick())
       .whileTrue(Commands.run(() -> scoringSystem.moveGranularCommand(true, scoringSystem.getSpeed()))); //figure out how to base it on how far the trigger's been pressed
     driverXbox.leftTrigger()
       .and(driverXbox.rightStick())
       .whileTrue(Commands.run(() -> scoringSystem.moveGranularCommand(false, scoringSystem.getSpeed()))); //figure out how to base it on how far the trigger's been pressed
+    */
 
     //By default, if the triggers are pressed, step the elevator up or down
-    driverXbox.rightTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(true)));
-    driverXbox.leftTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(false)));
+    //driverXbox.rightTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(true)));
+    //driverXbox.leftTrigger().onTrue(Commands.runOnce(() ->  scoringSystem.moveStepCommand(false)));
 
     //If left button is pressed, pull the game piece in.
-    driverXbox.leftBumper().whileTrue(Commands.run(() -> scoringSystem.pullCommand()));
+    //driverXbox.leftBumper().whileTrue(Commands.run(() -> scoringSystem.pullCommand()));
 
     //If right button is pressed, launch the game piece out
-    driverXbox.rightBumper().whileTrue(Commands.run(() -> scoringSystem.launchCommand()));
+    //driverXbox.rightBumper().whileTrue(Commands.run(() -> scoringSystem.launchCommand()));
 
     //If the left joystick is pressed, toggle to double the speed (otherwise halve it)
     //driverXbox.leftStick().toggleOnTrue(Commands.runOnce(null)); Worry about this later, we haven't made the logic for it yet.
@@ -157,7 +159,6 @@ public class RobotContainer
      * 
      * controllerName.buttonName().onTrue/whileTrue/onFalse/whileFalse(Commands.runOnce/run(() -> subSystem.commandName(parameters)));
      */
-
   }
 
   /**

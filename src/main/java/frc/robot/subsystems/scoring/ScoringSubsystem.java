@@ -9,6 +9,7 @@ import javax.lang.model.util.ElementScanner14;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class ScoringSubsystem extends SubsystemBase {
 
@@ -28,7 +29,6 @@ public class ScoringSubsystem extends SubsystemBase {
     public static final double STEP_3 = 75;
     public static final double STEP_4 = 100;
 
-    private static final double JOYSTICK_DEADZONE = 0.1;     // Deadzone for joystick input
     private static final double ELEVATOR_SPEED = 0.5;        // Base speed for manual control
 
     public static double globalTargetRotations = 0; //static variable storing target rotations for the elevator.
@@ -38,8 +38,10 @@ public class ScoringSubsystem extends SubsystemBase {
     private final PWMSparkMax launcherMotor_1 = new PWMSparkMax(LAUNCHER_MOTOR_PWM_CHANNEL_1);
     private final PWMSparkMax launcherMotor_2 = new PWMSparkMax(LAUNCHER_MOTOR_PWM_CHANNEL_2);
     private final Encoder elevatorEncoder = new Encoder(ENCODER_CHANNEL_A, ENCODER_CHANNEL_B);
-    private final Joystick joystick = new Joystick(1); // Joystick port
+    private final CommandXboxController driverXbox = new CommandXboxController(0); // Joystick port
     // Update the joystick port number if your joystick is connected to a different port
+
+    public static double targetHeight = 0;
 
     public ScoringSubsystem() {
         // Encoder setup: distance per pulse, reverse direction if needed
@@ -50,17 +52,10 @@ public class ScoringSubsystem extends SubsystemBase {
     
     @Override
     public void periodic() {
-        // Read joystick input
-        double joystickValue = -joystick.getY(); // Negative for forward control
-
-        // Apply deadzone to joystick input
-        if (Math.abs(joystickValue) < JOYSTICK_DEADZONE) {
-            joystickValue = 0;
-        }
 
         // Calculate target position based on joystick input
         double currentHeight = elevatorEncoder.getDistance();
-        double targetHeight = currentHeight + joystickValue * ELEVATOR_SPEED;
+        targetHeight = ScoringSubsystem.globalTargetRotations;
 
         // Clamp target height to within safe limits
         if (targetHeight > MAX_ELEVATOR_HEIGHT) {
@@ -69,16 +64,19 @@ public class ScoringSubsystem extends SubsystemBase {
             targetHeight = MIN_ELEVATOR_HEIGHT;
         }
 
-        // Control motor to move toward target height
-        if (joystickValue != 0) {
-            if (targetHeight > currentHeight) {
-                elevatorMotor.set(ELEVATOR_SPEED); // Move up
-            } else if (targetHeight < currentHeight) {
-                elevatorMotor.set(-ELEVATOR_SPEED); // Move down
-            }
-        } else {
-            elevatorMotor.set(0); // Stop motor
+        //printing out some 
+        System.out.println("targetHeight = " + targetHeight);
+        System.out.println("current distance = " + elevatorEncoder.getDistance());
+
+        //actually making the goddamn elevator go to the target position I hate all of this
+        if(false){} //moving by steps, dw about it
+        double upness = driverXbox.getRightTriggerAxis()-driverXbox.getLeftTriggerAxis();
+        if(upness < 0 || upness > 0)
+        {
+            moveGranular(upness > 0, Math.abs(upness));
         }
+
+        moveBasic();
     }
 
     public double getSpeed() //returns speed of the elevator as set above
@@ -88,6 +86,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public Command moveBasicCommand() //Calls moveBasic, works with the Command structure
     {
+        System.out.println("moveBasicCommand");
         return run(
         () -> {
             moveBasic();
@@ -97,6 +96,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public void moveBasic() //Tells the elevator to move to the current target, without changing the target.
     {
+        //System.out.println("moveBasic");
         double currentHeight = elevatorEncoder.getDistance();
 
         if(ScoringSubsystem.globalTargetRotations > currentHeight)
@@ -105,7 +105,7 @@ public class ScoringSubsystem extends SubsystemBase {
         }
         else if(ScoringSubsystem.globalTargetRotations < currentHeight)
         {
-            elevatorMotor.set(-ELEVATOR_SPEED);
+            elevatorMotor.set(-1 * ELEVATOR_SPEED);
         }
         else
         {
@@ -115,6 +115,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public Command moveToPositionCommand(double targetRotations) //Calls moveToPosition, works with the Command structure
     {
+        System.out.println("moveToPositionCommand");
         return run(
         () -> {
             moveToPosition(targetRotations);
@@ -124,7 +125,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public void moveToPosition(double targetRotations) //Moves the elevator to a given position
     {
-
+        System.out.println("moveToPosition");
         //Set target within min and max parameters
         if (targetRotations < MIN_ELEVATOR_HEIGHT)
         {
@@ -153,6 +154,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public Command moveStepCommand(boolean up) //Calls moveStep, works with the Command structure
     {
+        System.out.println("moveStepCommand");
         return run(
         () -> {
             moveStep(up);
@@ -162,6 +164,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public void moveStep(boolean up) //OLD: Moves the elevator up or down to pre-set steps when bumpers are pressed
     {
+        System.out.println("moveStep");
         //Determines the current target position and moves to an adjacent step position
         //Works based on the TARGET position, not the ACTUAL position
         //If you press to go up six times, it will go straight to the top without stopping.
@@ -208,6 +211,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public Command moveGranularCommand(boolean up, double amount) //Calls moveGranular, works with the Command structure
     {
+        System.out.println("moveGranularCommand");
         return run(
         () -> {
             moveGranular(up, amount);
@@ -217,6 +221,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public void moveGranular(boolean up, double amount) //Moves the elevator while bumpers are pressed; speed depends on how hard you press.
     {
+        System.out.println("moveGranular: UP: " + up + " AMOUNT: " + amount);
         if(up)
         {
             moveToPosition(ScoringSubsystem.globalTargetRotations+amount*ELEVATOR_SPEED);
@@ -229,6 +234,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
     public Command pullCommand() //Calls pull, works with the Command structure
     {
+        System.out.println("pullCommand");
         return run(
         () -> {
             pull();
@@ -237,12 +243,14 @@ public class ScoringSubsystem extends SubsystemBase {
     }
     public void pull()
     {
+        System.out.println("pull");
         launcherMotor_1.set(1);
         launcherMotor_2.set(1);
     }
 
     public Command launchCommand() //Calls launch, works with the Command structure
     {
+        System.out.println("launchCommand");
         return run(
         () -> {
             launch();
@@ -251,12 +259,14 @@ public class ScoringSubsystem extends SubsystemBase {
     }
     public void launch()
     {
+        System.out.println("launch");
         launcherMotor_1.set(-1);
         launcherMotor_2.set(-1);
     }
 
     public Command stopCommand() //Calls stop, works with the Command structure
     {
+        System.out.println("stopCommand");
         return run(
         () -> {
             stop();
@@ -264,6 +274,7 @@ public class ScoringSubsystem extends SubsystemBase {
         );
     }
     public void stop() {
+        System.out.println("stop");
         // Stop the motor
         elevatorMotor.set(0);
         launcherMotor_1.set(0);
