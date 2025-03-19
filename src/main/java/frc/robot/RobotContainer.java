@@ -124,6 +124,7 @@ public class RobotContainer
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
 
+    /*
     if (RobotBase.isSimulation())
     {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
@@ -131,6 +132,8 @@ public class RobotContainer
     {
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     }
+    */
+    drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
 
     /* bullshit bindings fuck all of this
     driverXbox.rightTrigger()

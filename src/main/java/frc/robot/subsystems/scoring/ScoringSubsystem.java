@@ -2,11 +2,15 @@ package frc.robot.subsystems.scoring;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 import javax.lang.model.util.ElementScanner14;
 
+import com.revrobotics.jni.CANSparkJNI;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.*;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,9 +23,9 @@ public class ScoringSubsystem extends SubsystemBase {
 
     // Constants for motor and limits
     // All can be changable
-    private static final int ELEVATOR_MOTOR_CHANNEL = 3; // PWM channel for the elevator motor
-    private static final int LAUNCHER_MOTOR_CHANNEL_1 = 4; // PWM channel for the launcher motor
-    private static final int LAUNCHER_MOTOR_CHANNEL_2 = 5; // PWM channel for the launcher motor
+    private static final int ELEVATOR_MOTOR_CHANNEL = 13; // id for the elevator motor
+    private static final int LAUNCHER_MOTOR_CHANNEL_1 = 14; // id for the launcher motor
+    private static final int LAUNCHER_MOTOR_CHANNEL_2 = 15; // id for the launcher motor
     private static final int ENCODER_CHANNEL_A = 0; // Encoder channel A
     private static final int ENCODER_CHANNEL_B = 1; // Encoder channel B
 
@@ -33,21 +37,22 @@ public class ScoringSubsystem extends SubsystemBase {
     public static final double STEP_3 = 75;
     public static final double STEP_4 = 100;
 
-    private static final double ELEVATOR_SPEED = 0.05;        // Base speed for manual control
+    private static final double ELEVATOR_SPEED = 0.15;        // Base speed for manual control
 
     public static double globalTargetRotations = 0; //static variable storing target rotations for the elevator.
 
     // Motor, encoder, and joystick instances
-    
-    private final PWMSparkMax elevatorMotor = new PWMSparkMax(ELEVATOR_MOTOR_CHANNEL);
-    private final PWMSparkMax launcherMotor_1 = new PWMSparkMax(LAUNCHER_MOTOR_CHANNEL_1);
-    private final PWMSparkMax launcherMotor_2 = new PWMSparkMax(LAUNCHER_MOTOR_CHANNEL_2);
+
+    private final SparkMax elevatorMotor = new SparkMax(ELEVATOR_MOTOR_CHANNEL, MotorType.kBrushless);
+    private final SparkMax launcherMotor_1 = new SparkMax(LAUNCHER_MOTOR_CHANNEL_1, MotorType.kBrushless);
+    private final SparkMax launcherMotor_2 = new SparkMax(LAUNCHER_MOTOR_CHANNEL_2, MotorType.kBrushless);
     private final Encoder elevatorEncoder = new Encoder(ENCODER_CHANNEL_A, ENCODER_CHANNEL_B);
-    private final CommandXboxController driverXbox = new CommandXboxController(0); // Joystick port
+    //private final CommandXboxController driverXbox = new CommandXboxController(0); // Joystick port
+    private final XboxController driverXbox = new XboxController(0);
     // Update the joystick port number if your joystick is connected to a different port
 
     public static double targetHeight = 0;
-
+    
     public ScoringSubsystem() {
         // Encoder setup: distance per pulse, reverse direction if needed
         elevatorEncoder.setDistancePerPulse(1.0); // Set appropriately for your encoder
@@ -58,6 +63,7 @@ public class ScoringSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
+        System.out.println("Current height: " + elevatorEncoder.getDistance());
         double upness = 0;
         if(!BASIC_MODE) //If, by some miracle, we have gotten the advanced code to work, set BASIC_MODE to false.
         {
@@ -86,7 +92,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
             moveBasic();
         }
-        else //In case we *haven't* received divine intervention, use this code.
+        else//In case we *haven't* received divine intervention, use this code.
         {
             upness = driverXbox.getRightTriggerAxis()-driverXbox.getLeftTriggerAxis();
             if(upness !=0)
@@ -95,6 +101,29 @@ public class ScoringSubsystem extends SubsystemBase {
                 System.out.println("Speed: " + ELEVATOR_SPEED*upness);
                 elevatorMotor.set(ELEVATOR_SPEED*upness);
             }
+            else
+            {
+                elevatorMotor.set(0);
+            }
+        }
+        //strike me down, alan turing, y'aint have the balls
+        //(see, the joke is he was chemically castrated by the government)
+
+        //intake controls
+        if(driverXbox.getRightBumperButton())
+        {
+            launcherMotor_1.set(1);
+            launcherMotor_2.set(1);
+        }
+        else if(driverXbox.getLeftBumperButton())
+        {
+            launcherMotor_1.set(-1);
+            launcherMotor_2.set(-1);
+        }
+        else
+        {
+            launcherMotor_1.set(0);
+            launcherMotor_2.set(0);
         }
     }
 
