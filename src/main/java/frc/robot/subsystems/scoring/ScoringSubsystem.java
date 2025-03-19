@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 import javax.lang.model.util.ElementScanner14;
 
+import com.revrobotics.spark.SparkMax;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,11 +15,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class ScoringSubsystem extends SubsystemBase {
 
+    private static final boolean BASIC_MODE = true;
+
     // Constants for motor and limits
     // All can be changable
-    private static final int ELEVATOR_MOTOR_PWM_CHANNEL = 3; // PWM channel for the elevator motor
-    private static final int LAUNCHER_MOTOR_PWM_CHANNEL_1 = 4; // PWM channel for the launcher motor
-    private static final int LAUNCHER_MOTOR_PWM_CHANNEL_2 = 5; // PWM channel for the launcher motor
+    private static final int ELEVATOR_MOTOR_CHANNEL = 3; // PWM channel for the elevator motor
+    private static final int LAUNCHER_MOTOR_CHANNEL_1 = 4; // PWM channel for the launcher motor
+    private static final int LAUNCHER_MOTOR_CHANNEL_2 = 5; // PWM channel for the launcher motor
     private static final int ENCODER_CHANNEL_A = 0; // Encoder channel A
     private static final int ENCODER_CHANNEL_B = 1; // Encoder channel B
 
@@ -29,14 +33,15 @@ public class ScoringSubsystem extends SubsystemBase {
     public static final double STEP_3 = 75;
     public static final double STEP_4 = 100;
 
-    private static final double ELEVATOR_SPEED = 0.5;        // Base speed for manual control
+    private static final double ELEVATOR_SPEED = 0.05;        // Base speed for manual control
 
     public static double globalTargetRotations = 0; //static variable storing target rotations for the elevator.
 
     // Motor, encoder, and joystick instances
-    private final PWMSparkMax elevatorMotor = new PWMSparkMax(ELEVATOR_MOTOR_PWM_CHANNEL);
-    private final PWMSparkMax launcherMotor_1 = new PWMSparkMax(LAUNCHER_MOTOR_PWM_CHANNEL_1);
-    private final PWMSparkMax launcherMotor_2 = new PWMSparkMax(LAUNCHER_MOTOR_PWM_CHANNEL_2);
+    
+    private final PWMSparkMax elevatorMotor = new PWMSparkMax(ELEVATOR_MOTOR_CHANNEL);
+    private final PWMSparkMax launcherMotor_1 = new PWMSparkMax(LAUNCHER_MOTOR_CHANNEL_1);
+    private final PWMSparkMax launcherMotor_2 = new PWMSparkMax(LAUNCHER_MOTOR_CHANNEL_2);
     private final Encoder elevatorEncoder = new Encoder(ENCODER_CHANNEL_A, ENCODER_CHANNEL_B);
     private final CommandXboxController driverXbox = new CommandXboxController(0); // Joystick port
     // Update the joystick port number if your joystick is connected to a different port
@@ -53,30 +58,44 @@ public class ScoringSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        // Calculate target position based on joystick input
-        double currentHeight = elevatorEncoder.getDistance();
-        targetHeight = ScoringSubsystem.globalTargetRotations;
-
-        // Clamp target height to within safe limits
-        if (targetHeight > MAX_ELEVATOR_HEIGHT) {
-            targetHeight = MAX_ELEVATOR_HEIGHT;
-        } else if (targetHeight < MIN_ELEVATOR_HEIGHT) {
-            targetHeight = MIN_ELEVATOR_HEIGHT;
-        }
-
-        //printing out some 
-        System.out.println("targetHeight = " + targetHeight);
-        System.out.println("current distance = " + elevatorEncoder.getDistance());
-
-        //actually making the goddamn elevator go to the target position I hate all of this
-        if(false){} //moving by steps, dw about it
-        double upness = driverXbox.getRightTriggerAxis()-driverXbox.getLeftTriggerAxis();
-        if(upness < 0 || upness > 0)
+        double upness = 0;
+        if(!BASIC_MODE) //If, by some miracle, we have gotten the advanced code to work, set BASIC_MODE to false.
         {
-            moveGranular(upness > 0, Math.abs(upness));
-        }
+            // Calculate target position based on joystick input
+            double currentHeight = elevatorEncoder.getDistance();
+            targetHeight = ScoringSubsystem.globalTargetRotations;
 
-        moveBasic();
+            // Clamp target height to within safe limits
+            if (targetHeight > MAX_ELEVATOR_HEIGHT) {
+                targetHeight = MAX_ELEVATOR_HEIGHT;
+            } else if (targetHeight < MIN_ELEVATOR_HEIGHT) {
+                targetHeight = MIN_ELEVATOR_HEIGHT;
+            }
+
+            //printing out some 
+            System.out.println("targetHeight = " + targetHeight);
+            System.out.println("current distance = " + elevatorEncoder.getDistance());
+
+            //actually making the goddamn elevator go to the target position I hate all of this
+            if(false){} //moving by steps, dw about it
+            upness = driverXbox.getRightTriggerAxis()-driverXbox.getLeftTriggerAxis();
+            if(upness < 0 || upness > 0)
+            {
+                moveGranular(upness > 0, Math.abs(upness));
+            }
+
+            moveBasic();
+        }
+        else //In case we *haven't* received divine intervention, use this code.
+        {
+            upness = driverXbox.getRightTriggerAxis()-driverXbox.getLeftTriggerAxis();
+            if(upness !=0)
+            {
+                System.out.println("Upness: " + upness);
+                System.out.println("Speed: " + ELEVATOR_SPEED*upness);
+                elevatorMotor.set(ELEVATOR_SPEED*upness);
+            }
+        }
     }
 
     public double getSpeed() //returns speed of the elevator as set above
