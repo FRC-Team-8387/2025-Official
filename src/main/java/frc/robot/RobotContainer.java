@@ -133,7 +133,7 @@ public class RobotContainer
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     }
     */
-    drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
     /* bullshit bindings fuck all of this
     driverXbox.rightTrigger()

@@ -63,7 +63,7 @@ public class ScoringSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        System.out.println("Current height: " + elevatorEncoder.getDistance());
+        //System.out.println("Current height: " + elevatorEncoder.getDistance());
         double upness = 0;
         if(!BASIC_MODE) //If, by some miracle, we have gotten the advanced code to work, set BASIC_MODE to false.
         {
@@ -97,8 +97,8 @@ public class ScoringSubsystem extends SubsystemBase {
             upness = driverXbox.getRightTriggerAxis()-driverXbox.getLeftTriggerAxis();
             if(upness !=0)
             {
-                System.out.println("Upness: " + upness);
-                System.out.println("Speed: " + ELEVATOR_SPEED*upness);
+                //System.out.println("Upness: " + upness);
+                //System.out.println("Speed: " + ELEVATOR_SPEED*upness);
                 elevatorMotor.set(ELEVATOR_SPEED*upness);
             }
             else
@@ -112,13 +112,13 @@ public class ScoringSubsystem extends SubsystemBase {
         //intake controls
         if(driverXbox.getRightBumperButton())
         {
-            launcherMotor_1.set(1);
-            launcherMotor_2.set(1);
+            launcherMotor_1.set(-1);
+            launcherMotor_2.set(-1);
         }
         else if(driverXbox.getLeftBumperButton())
         {
-            launcherMotor_1.set(-1);
-            launcherMotor_2.set(-1);
+            launcherMotor_1.set(0.5);
+            launcherMotor_2.set(0.5);
         }
         else
         {
