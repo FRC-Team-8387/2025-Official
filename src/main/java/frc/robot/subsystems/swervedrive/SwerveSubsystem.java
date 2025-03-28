@@ -120,6 +120,8 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
+
+
     swerveDrive = new SwerveDrive(driveCfg,
                                   controllerCfg,
                                   Constants.MAX_SPEED,
@@ -134,6 +136,8 @@ public class SwerveSubsystem extends SubsystemBase
   {
     vision = new Vision(swerveDrive::getPose, swerveDrive.field);
   }
+
+  
 
   @Override
   public void periodic()
@@ -364,6 +368,9 @@ public class SwerveSubsystem extends SubsystemBase
         3.0, 5.0, 3.0);
   }
 
+
+
+
   /**
    * Returns a Command that centers the modules of the SwerveDrive subsystem.
    *
@@ -388,6 +395,12 @@ public class SwerveSubsystem extends SubsystemBase
         .until(() -> swerveDrive.getPose().getTranslation().getDistance(new Translation2d(0, 0)) >
                      distanceInMeters);
   }
+
+  public Command driveTimeCommand(double seconds, double speedInMetersPerSecond)
+  {
+    return run(() -> drive(new ChassisSpeeds(speedInMetersPerSecond, 0, 0))).withTimeout(seconds);
+  }
+
 
   /**
    * Replaces the swerve module feedforward with a new SimpleMotorFeedforward object.
@@ -417,6 +430,19 @@ public class SwerveSubsystem extends SubsystemBase
                             translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
                             translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()), 0.8),
                         Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
+                        true,
+                        false);
+    });
+  }
+
+  public Command driveCommandWithDoubles(double translationX, double translationY, double angularRotationX)
+  {
+    return run(() -> {
+      // Make the robot move
+      swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
+                            translationX * swerveDrive.getMaximumChassisVelocity(),
+                            translationY * swerveDrive.getMaximumChassisVelocity()), 0.8),
+                        Math.pow(angularRotationX, 3) * swerveDrive.getMaximumChassisAngularVelocity(),
                         true,
                         false);
     });

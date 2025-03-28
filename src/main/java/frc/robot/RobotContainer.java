@@ -4,23 +4,32 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import java.lang.reflect.Method;
+import java.util.function.DoubleSupplier;
+
 import swervelib.SwerveInputStream;
 import frc.robot.commands.scoring.ScoringCommand;
 import frc.robot.subsystems.scoring.ScoringSubsystem;
@@ -32,15 +41,20 @@ import frc.robot.subsystems.scoring.ScoringSubsystem;
  */
 public class RobotContainer
 {
+  double baseinvert = 1;
+  double invert;
 
+  private final SendableChooser<Command> autoChooser;
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
+
+ 
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
   
-  private final ScoringSubsystem scoringSystem = new ScoringSubsystem();
+  public final ScoringSubsystem scoringSystem = new ScoringSubsystem();
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
@@ -63,7 +77,7 @@ public class RobotContainer
    * Clone's the angular velocity input stream and converts it to a robotRelative input stream.
    */
   SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
-                                                             .allianceRelativeControl(false);
+                                                             .allianceRelativeControl(true);
 
   SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.getSwerveDrive(),
                                                                         () -> -driverXbox.getLeftY(),
@@ -99,6 +113,12 @@ public class RobotContainer
    */
   public RobotContainer()
   {
+    
+    NamedCommands.registerCommand("Move Elevator Up", new RunCommand(() -> scoringSystem.MoveElevatorMotorToPosition(Constants.LEVEL_3)));
+    NamedCommands.registerCommand("Launch", new RunCommand(() -> scoringSystem.launchCommand()).withTimeout(0.5));
+    NamedCommands.registerCommand("Stop", new RunCommand(() -> scoringSystem.stopCommand()));
+
+    autoChooser = AutoBuilder.buildAutoChooser();
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -114,6 +134,7 @@ public class RobotContainer
    */
   private void configureBindings()
   {
+    
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
@@ -124,6 +145,8 @@ public class RobotContainer
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
 
+
+        //zdriverXbox.a().onTrue(scoringSystem.ElevatorLevelOne());
     /*
     if (RobotBase.isSimulation())
     {
@@ -135,7 +158,7 @@ public class RobotContainer
     */
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-    /* bullshit bindings fuck all of this
+    /* bs bindings f all of this
     driverXbox.rightTrigger()
       .and(driverXbox.rightStick())
       .whileTrue(Commands.run(() -> scoringSystem.moveGranularCommand(true, scoringSystem.getSpeed()))); //figure out how to base it on how far the trigger's been pressed
@@ -154,6 +177,20 @@ public class RobotContainer
     //If right button is pressed, launch the game piece out
     //driverXbox.rightBumper().whileTrue(Commands.run(() -> scoringSystem.launchCommand()));
 
+    // driverXbox.rightTrigger(0.05).whileTrue(new InstantCommand(() -> scoringSystem.moveElevatorUp(driverXbox.getRightTriggerAxis() * 3)));
+    // driverXbox.rightTrigger().or(driverXbox.leftTrigger()).onFalse(new InstantCommand(() -> scoringSystem.stopElevator()));
+    // driverXbox.leftTrigger(0.05).whileTrue(new InstantCommand(() -> scoringSystem.moveElevatorDown(driverXbox.getLeftTriggerAxis() * 3)));
+
+    //ELEVATOR CONTROLS: A for level 1, B for level 2, Y for level 3, X to reset
+    //NOTE: RESET 0 TO THE LOWEST POSSIBLE POSITION EVERY TIME YOU RESTART
+    driverXbox.a().onTrue(new InstantCommand(() -> scoringSystem.MoveElevatorMotorToPosition(Constants.LEVEL_1)));
+    driverXbox.b().onTrue(new InstantCommand(() -> scoringSystem.MoveElevatorMotorToPosition(Constants.LEVEL_2)));
+    driverXbox.y().onTrue(new InstantCommand(() -> scoringSystem.MoveElevatorMotorToPosition(Constants.LEVEL_3)));
+    driverXbox.x().onTrue(new InstantCommand(() -> scoringSystem.ResetEncoders()));
+
+    
+
+
     //If the left joystick is pressed, toggle to double the speed (otherwise halve it)
     //driverXbox.leftStick().toggleOnTrue(Commands.runOnce(null)); Worry about this later, we haven't made the logic for it yet.
 
@@ -162,6 +199,7 @@ public class RobotContainer
      * 
      * controllerName.buttonName().onTrue/whileTrue/onFalse/whileFalse(Commands.runOnce/run(() -> subSystem.commandName(parameters)));
      */
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
@@ -172,7 +210,36 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
+    //original:
+    //return drivebase.getAutonomousCommand("New Auto");
+    
+    //Placeholder values, distances in meters
+    double metersPerSecond = 1;
+    double distanceToReef = 2.235;
+    // double distanceBack = 1;
+    // double distanceToBarge_Left = 2;
+    // double distanceToBarge_Forwards = 5;
+
+    //ATTENTION: THIS CODE REQUIRES US TO BE IN THE *CENTER* STARTING POSITION.
+    return drivebase.driveTimeCommand((distanceToReef/metersPerSecond), -metersPerSecond) //Drive to reef
+            .andThen(scoringSystem.launchCommand()).withTimeout(5) //Deposit coral
+            .andThen(scoringSystem.stopCommand());
+            // .andThen(drivebase.driveToDistanceCommand(-1 * distanceBack,metersPerSecond)) //Drive back
+            // .andThen(scoringSystem.stopCommand()) //Stop the launcher
+            // .andThen(drivebase.driveCommandWithDoubles(0,distanceToBarge_Left,0)) //Move left
+            // .andThen(drivebase.driveToDistanceCommand(distanceToBarge_Forwards,metersPerSecond)); //Move to barge
+    //return autoChooser.getSelected();
+
+    /*
+     * PLAN:
+     *  - Drive forwards
+     *  - Deposit a coral *somewhere* on the reef
+     *  - Drive to wherever we need to after that
+     * PROBLEMS:
+     *  - How do we do that
+     * ADDENDUM:
+     *  - I think I did it
+     */
   }
 
   public void setMotorBrake(boolean brake)

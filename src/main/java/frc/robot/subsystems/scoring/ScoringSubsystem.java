@@ -3,17 +3,26 @@ package frc.robot.subsystems.scoring;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 import javax.lang.model.util.ElementScanner14;
 
 import com.revrobotics.jni.CANSparkJNI;
+import com.revrobotics.servohub.ServoHub.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.*;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -21,13 +30,13 @@ public class ScoringSubsystem extends SubsystemBase {
 
     private static final boolean BASIC_MODE = true;
 
-    // Constants for motor and limits
+    // Constants for motor and limits+
     // All can be changable
-    private static final int ELEVATOR_MOTOR_CHANNEL = 13; // id for the elevator motor
+    private static final int ELEVATOR_MOTOR_CHANNEL = 16; // id for the elevator motor
     private static final int LAUNCHER_MOTOR_CHANNEL_1 = 14; // id for the launcher motor
     private static final int LAUNCHER_MOTOR_CHANNEL_2 = 15; // id for the launcher motor
-    private static final int ENCODER_CHANNEL_A = 0; // Encoder channel A
-    private static final int ENCODER_CHANNEL_B = 1; // Encoder channel B
+    private static final int ENCODER_CHANNEL_A = 2; // Encoder channel A
+    private static final int ENCODER_CHANNEL_B = 3; // Encoder channel B
 
     // Placeholder values for max, min, and step heights. CHANGE LATER.
     public static final double MAX_ELEVATOR_HEIGHT = 100.0; // Max encoder units (example)
@@ -37,7 +46,7 @@ public class ScoringSubsystem extends SubsystemBase {
     public static final double STEP_3 = 75;
     public static final double STEP_4 = 100;
 
-    private static final double ELEVATOR_SPEED = 0.15;        // Base speed for manual control
+    private static final double ELEVATOR_SPEED = 0.75;        // Base speed for manual control
 
     public static double globalTargetRotations = 0; //static variable storing target rotations for the elevator.
 
@@ -51,7 +60,19 @@ public class ScoringSubsystem extends SubsystemBase {
     private final XboxController driverXbox = new XboxController(0);
     // Update the joystick port number if your joystick is connected to a different port
 
+    SparkClosedLoopController m_controller = elevatorMotor.getClosedLoopController();
+
+
     public static double targetHeight = 0;
+
+    //Limit Switches
+    
+    int topLimitSwitchChannel = 0;
+    int bottomLimitSwitchChannel = 1;
+    DigitalInput topLimitSwitch = new DigitalInput(topLimitSwitchChannel);
+    DigitalInput bottomLimitSwitch = new DigitalInput(bottomLimitSwitchChannel);
+    
+
     
     public ScoringSubsystem() {
         // Encoder setup: distance per pulse, reverse direction if needed
@@ -60,6 +81,35 @@ public class ScoringSubsystem extends SubsystemBase {
         elevatorEncoder.reset();
     }
     
+    
+    public void Initialize()
+    {
+        //     SparkFlexConfig config = new SparkFlexConfig();
+
+        // // Set PID gains
+        // config.closedLoop
+        //     .p(1)
+        //     .i(0)
+        //     .d(0.05)
+        //     .outputRange(-1, 1);
+
+        // elevatorMotor.configure(config, com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    }
+
+    public Command ElevatorDefault()
+    {
+        return new InstantCommand(() -> m_controller.setReference(0, ControlType.kPosition));
+    }
+
+    public Command MoveElevatorMotorToPosition(double position)
+    {
+        return new InstantCommand(() -> m_controller.setReference(position, ControlType.kPosition));
+    }
+    
+    public Command ResetEncoders()
+    {
+        return new InstantCommand(() -> {elevatorEncoder.reset();});
+    }
     @Override
     public void periodic() {
 
@@ -84,7 +134,7 @@ public class ScoringSubsystem extends SubsystemBase {
 
             //actually making the goddamn elevator go to the target position I hate all of this
             if(false){} //moving by steps, dw about it
-            upness = driverXbox.getRightTriggerAxis()-driverXbox.getLeftTriggerAxis();
+            upness = -driverXbox.getRightTriggerAxis()+driverXbox.getLeftTriggerAxis();
             if(upness < 0 || upness > 0)
             {
                 moveGranular(upness > 0, Math.abs(upness));
@@ -94,8 +144,9 @@ public class ScoringSubsystem extends SubsystemBase {
         }
         else//In case we *haven't* received divine intervention, use this code.
         {
-            upness = driverXbox.getRightTriggerAxis()-driverXbox.getLeftTriggerAxis();
-            if(upness !=0)
+            
+            upness = -driverXbox.getRightTriggerAxis()+driverXbox.getLeftTriggerAxis();
+            if((upness < 0 && topLimitSwitch.get()) || (upness > 0 && !bottomLimitSwitch.get()))
             {
                 //System.out.println("Upness: " + upness);
                 //System.out.println("Speed: " + ELEVATOR_SPEED*upness);
@@ -105,6 +156,18 @@ public class ScoringSubsystem extends SubsystemBase {
             {
                 elevatorMotor.set(0);
             }
+            
+            // upness = -driverXbox.getRightTriggerAxis()+driverXbox.getLeftTriggerAxis();
+            // if((upness != 0))
+            // {
+            //     //System.out.println("Upness: " + upness);
+            //     //System.out.println("Speed: " + ELEVATOR_SPEED*upness);
+            //     elevatorMotor.set(ELEVATOR_SPEED*upness);
+            // }
+            // else
+            // {
+            //     elevatorMotor.set(0);
+            // }
         }
         //strike me down, alan turing, y'aint have the balls
         //(see, the joke is he was chemically castrated by the government)
@@ -140,6 +203,27 @@ public class ScoringSubsystem extends SubsystemBase {
             moveBasic();
         }
         );
+    }
+
+    public void moveElevatorUp(double input)
+    {
+        if(!topLimitSwitch.get())
+        {
+            elevatorMotor.set(input);
+        }
+    }
+    
+    public void stopElevator()
+    {
+        elevatorMotor.set(0);
+    }
+
+    public void moveElevatorDown(double input)
+    {
+        if(!bottomLimitSwitch.get())
+        {
+            elevatorMotor.set(-input);
+        }
     }
 
     public void moveBasic() //Tells the elevator to move to the current target, without changing the target.
@@ -329,7 +413,14 @@ public class ScoringSubsystem extends SubsystemBase {
         launcherMotor_2.set(0);
     }
 
-
+    public void invertDrive(double invert, double BaseSpeed)
+    {
+        var alliance = DriverStation.getAlliance();
+        if(alliance.get() == Alliance.Red)
+        {
+            invert = -BaseSpeed;
+        }
+    }
 
 
    

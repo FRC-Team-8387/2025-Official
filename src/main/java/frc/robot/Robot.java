@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import frc.robot.commands.scoring.ScoringCommand;
+import frc.robot.subsystems.scoring.ScoringSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -44,10 +45,11 @@ public class Robot extends TimedRobot
   @Override
   public void robotInit()
   {
-    CameraServer.startAutomaticCapture();
+    //CameraServer.startAutomaticCapture();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_robotContainer.scoringSystem.Initialize();
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
@@ -85,6 +87,7 @@ public class Robot extends TimedRobot
     m_robotContainer.setMotorBrake(true);
     disabledTimer.reset();
     disabledTimer.start();
+    m_robotContainer.scoringSystem.ElevatorDefault();
   }
 
   @Override
@@ -144,6 +147,7 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic()
   {
+
   }
 
   @Override
