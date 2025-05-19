@@ -44,6 +44,16 @@ public class RobotContainer
   double baseinvert = 1;
   double invert;
 
+  //deadband utility method
+  private double applyDeadzoneDouble(double input)
+  {
+    if(input > -0.05 && input < 0.05)
+    {
+      input = 0;
+    }
+    return input;
+  }
+
   private final SendableChooser<Command> autoChooser;
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
@@ -59,8 +69,12 @@ public class RobotContainer
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                () -> driverXbox.getLeftY() * -1,
-                                                                () -> driverXbox.getLeftX() * -1)
+                                                                () -> applyDeadzoneDouble(driverXbox.getLeftY()) * 1,
+                                                                () -> applyDeadzoneDouble(driverXbox.getLeftX()) * 1)
+                                                                //() -> driverXbox.getLeftX() * 1) 
+                                                                //! inverted forwards/backwards movement to solve issues with robot-oriented
+                                                                //Not sure why those issues were there
+                                                                //nvm that approach is really stupid that would invert angles
                                                             .withControllerRotationAxis(driverXbox::getRightX)
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
@@ -74,10 +88,11 @@ public class RobotContainer
                                                            .headingWhile(true);
 
   /**
-   * Clone's the angular velocity input stream and converts it to a robotRelative input stream.
+   * Clone's the angular velocit
+   y input stream and converts it to a robotRelative input stream.
    */
   SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
-                                                             .allianceRelativeControl(true);
+                                                             .allianceRelativeControl(false);
 
   SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.getSwerveDrive(),
                                                                         () -> -driverXbox.getLeftY(),
@@ -156,7 +171,7 @@ public class RobotContainer
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     }
     */
-    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    drivebase.setDefaultCommand(driveRobotOrientedAngularVelocity);
 
     /* bs bindings f all of this
     driverXbox.rightTrigger()
@@ -215,19 +230,22 @@ public class RobotContainer
     
     //Placeholder values, distances in meters
     double metersPerSecond = 1;
-    double distanceToReef = 2.235;
+    double distanceToReef = 1.5;
     // double distanceBack = 1;
     // double distanceToBarge_Left = 2;
     // double distanceToBarge_Forwards = 5;
 
     //ATTENTION: THIS CODE REQUIRES US TO BE IN THE *CENTER* STARTING POSITION.
     return drivebase.driveTimeCommand((distanceToReef/metersPerSecond), -metersPerSecond) //Drive to reef
-            .andThen(scoringSystem.launchCommand()).withTimeout(5) //Deposit coral
-            .andThen(scoringSystem.stopCommand());
+            //.andThen(scoringSystem.MoveElevatorMotorToPosition(Constants.LEVEL_1))
+            .andThen(scoringSystem.moveElevatorUpCommand(1).withTimeout(5))
+            //.andThen(scoringSystem.stopCommand()) //I think we actually might not need these stop commands?
+            .andThen(scoringSystem.launchCommand()).withTimeout(5); //Deposit coral
+            //.andThen(scoringSystem.stopCommand());
             // .andThen(drivebase.driveToDistanceCommand(-1 * distanceBack,metersPerSecond)) //Drive back
             // .andThen(scoringSystem.stopCommand()) //Stop the launcher
             // .andThen(drivebase.driveCommandWithDoubles(0,distanceToBarge_Left,0)) //Move left
-            // .andThen(drivebase.driveToDistanceCommand(distanceToBarge_Forwards,metersPerSecond)); //Move to barge
+            // .andThen(][ivebase.driveToDistanceCommand(distanceToBarge_Forwards,metersPerSecond)); //Move to barge
     //return autoChooser.getSelected();
 
     /*

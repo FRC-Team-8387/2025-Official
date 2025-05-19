@@ -209,8 +209,17 @@ public class ScoringSubsystem extends SubsystemBase {
     {
         if(!topLimitSwitch.get())
         {
-            elevatorMotor.set(input);
+            elevatorMotor.set(ELEVATOR_SPEED*input);
         }
+    }
+    public Command moveElevatorUpCommand(double input)
+    {
+        return run (
+        () -> 
+        {
+            moveElevatorUp(input);
+        }
+        );
     }
     
     public void stopElevator()

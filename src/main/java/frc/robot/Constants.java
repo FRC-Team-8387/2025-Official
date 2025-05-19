@@ -24,9 +24,9 @@ public final class Constants
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
   public static final double MAX_SPEED  = Units.feetToMeters(14.5);
 
-  public static final double LEVEL_1 = 10;
-  public static final double LEVEL_2 = 20;
-  public static final double LEVEL_3 = 30;
+  public static final double LEVEL_1 = 2;
+  public static final double LEVEL_2 = 2;
+  public static final double LEVEL_3 = 2;
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
 //  public static final class AutonConstants
